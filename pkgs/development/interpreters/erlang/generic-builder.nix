@@ -3,6 +3,7 @@
 # TODO: use jdk https://github.com/NixOS/nixpkgs/pull/89731
 , openjdk8 ? null # javacSupport
 , unixODBC ? null # odbcSupport
+, bootstrapped_erlang
 , libGL ? null, libGLU ? null, wxGTK ? null, wxmac ? null, xorg ? null # wxSupport
 , parallelBuild ? false
 , withSystemd ? stdenv.isLinux, systemd # systemd support in epmd
@@ -54,6 +55,8 @@ in stdenv.mkDerivation ({
 
   inherit src version;
 
+  depsBuildBuild = [] ++ optional isCross bootstrapped_erlang;
+
   nativeBuildInputs = [
     autoconf
     makeWrapper
@@ -62,8 +65,8 @@ in stdenv.mkDerivation ({
     buildPackages.libxslt
     libxml2
   ]
-    ++ optional hipeSupport gnum4
-    ++ optional isCross buildPackages.erlang_nox;
+    ++ optional hipeSupport gnum4;
+    
 
   buildInputs = [ ncurses openssl zlib ]
     ++ optionals wxSupport wxPackages2
